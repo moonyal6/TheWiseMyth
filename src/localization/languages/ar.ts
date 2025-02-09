@@ -59,6 +59,12 @@ export default {
         female: "أنثى",
         next: "التالي",
         step: "4/1"
+      },
+      nationality: {
+        title: "اختر المنشأ",
+        searchPlaceholder: "اكتب هنا اسم بلدك للبحث",
+        next: "حفظ",
+        step: "4/4"
       }
     }
   },

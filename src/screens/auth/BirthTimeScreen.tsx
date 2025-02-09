@@ -33,7 +33,7 @@ const BirthTimeScreen = ({ navigation }: Props) => {
   return (
     <AuthStepContent>
       <View style={tw`flex-1 justify-end`}>
-        <Card style={tw`mb-13`}>
+        <Card style={tw`mb-13 h-84`}>
           <TimePicker
             selectedTime={selectedTime}
             onTimeSelect={setSelectedTime}
@@ -62,4 +62,4 @@ const BirthTimeScreen = ({ navigation }: Props) => {
   );
 };
 
-export default BirthTimeScreen; 
+export default BirthTimeScreen;

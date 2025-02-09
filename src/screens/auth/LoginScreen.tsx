@@ -11,12 +11,15 @@ import SocialButtons from "../../components/shared/SocialButtons";
 import ArabicText from "../../components/shared/ArabicText";
 import tw from "../../utils/tailwind";
 import strings from "../../localization";
+import { CommonActions, useNavigation } from "@react-navigation/native";
+import { RootStackParamList } from "../../navigation/AppNavigator";
 
 type Props = {
   navigation: NativeStackNavigationProp<AuthStackParamList>;
 };
 
 const LoginScreen = ({ navigation }: Props) => {
+  const rootNavigation = useNavigation();
   // Form state
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -52,13 +55,19 @@ const LoginScreen = ({ navigation }: Props) => {
 
   // Handle login
   const handleLogin = async () => {
-    if (!validateForm()) return;
-
+    // Bypass validation for development
     setIsLoading(true);
     try {
-      // TODO: Implement actual login logic
-      await new Promise((resolve) => setTimeout(resolve, 1500)); // Simulate API call
-      console.log("Login attempt with:", { email, password });
+      // Simulate API call
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      // Navigate to MainApp using root navigation
+      rootNavigation.dispatch(
+        CommonActions.reset({
+          index: 0,
+          routes: [{ name: "MainApp" }],
+        }),
+      );
     } catch (error) {
       console.error("Login error:", error);
     } finally {

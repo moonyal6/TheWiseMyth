@@ -1,5 +1,7 @@
 import React from "react";
 import { View, Animated, ViewStyle } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import GradientBackground from "../../../../components/shared/GradientBackground";
 import ArabicText from "../../../../components/shared/ArabicText";
 import tw from "../../../../utils/tailwind";
 

@@ -1,36 +1,34 @@
 import React from "react";
-import { View, TextInput, Pressable } from "react-native";
-import { Feather } from "@expo/vector-icons";
+import { View, TextInput, Image } from "react-native";
 import tw from "../../../../utils/tailwind";
-import ArabicText from "../../../../components/shared/ArabicText";
+import strings from "../../../../localization";
 
-interface NationalitySearchProps {
+type NationalitySearchProps = {
   value: string;
   onChangeText: (text: string) => void;
-  onFocus?: () => void;
-  onBlur?: () => void;
-}
+};
 
 const NationalitySearch: React.FC<NationalitySearchProps> = ({
   value,
   onChangeText,
-  onFocus,
-  onBlur,
 }) => {
   return (
-    <View
-      style={tw`flex-row items-center px-4.5 py-4.5 border-b border-black/5`}
-    >
-      <Feather name='search' size={20} color='#000' style={tw`opacity-40`} />
-      <TextInput
-        value={value}
-        onChangeText={onChangeText}
-        onFocus={onFocus}
-        onBlur={onBlur}
-        placeholder='ابحث عن جنسيتك'
-        placeholderTextColor='rgba(0,0,0,0.4)'
-        style={tw`flex-1 mr-3 text-base text-right`}
-      />
+    <View style={tw`px-4 py-2`}>
+      <View
+        style={tw`flex-row items-center bg-gray-50 rounded-xl px-4 py-2 border border-gray-100`}
+      >
+        <Image
+          source={require("../../../../../assets/icons/search.png")}
+          style={tw`w-5 h-5 opacity-50`}
+        />
+        <TextInput
+          value={value}
+          onChangeText={onChangeText}
+          placeholder={strings.auth.steps.nationality.searchPlaceholder}
+          placeholderTextColor='#9CA3AF'
+          style={tw`flex-1 mr-2 text-right font-medium text-base`}
+        />
+      </View>
     </View>
   );
 };
