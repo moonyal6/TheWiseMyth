@@ -17,23 +17,27 @@ type Props = {
 const { height: SCREEN_HEIGHT } = Dimensions.get("window");
 
 const BirthTimeScreen = ({ navigation }: Props) => {
+  // Set initial time to 9:15:30 AM
   const [selectedTime, setSelectedTime] = useState<{
     hours: number;
     minutes: number;
     seconds: number;
     period: "AM" | "PM";
-  } | null>(null);
+  }>({
+    hours: 9,
+    minutes: 15,
+    seconds: 30,
+    period: "AM",
+  });
 
   const handleNext = () => {
-    if (selectedTime) {
-      navigation.navigate("Nationality");
-    }
+    navigation.navigate("Nationality");
   };
 
   return (
     <AuthStepContent>
       <View style={tw`flex-1 justify-end`}>
-        <Card style={tw`mb-13 h-84`}>
+        <Card style={tw`mb-13 py-6 h-71`}>
           <TimePicker
             selectedTime={selectedTime}
             onTimeSelect={setSelectedTime}
@@ -44,12 +48,10 @@ const BirthTimeScreen = ({ navigation }: Props) => {
         <View style={{ marginBottom: SCREEN_HEIGHT * 0.11 }}>
           <Pressable
             onPress={handleNext}
-            disabled={!selectedTime}
             style={({ pressed }) => [
               tw`w-full h-14 rounded-xl justify-center items-center`,
               { backgroundColor: COLORS.primary.purple },
-              !selectedTime && tw`opacity-50`,
-              pressed && !selectedTime && { opacity: 0.3 },
+              pressed && { opacity: 0.8 },
             ]}
           >
             <ArabicText style={tw`text-white font-bold text-lg`}>

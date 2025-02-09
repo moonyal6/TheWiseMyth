@@ -37,7 +37,8 @@ const StepIndicator: React.FC<StepIndicatorProps> = ({
       // Initial stagger animation for the first screen, starting from right
       const sequence = Animated.stagger(
         100,
-        animations.map((anim) =>
+        // Reverse the animations array to make the stagger effect start from right
+        [...animations].reverse().map((anim) =>
           Animated.spring(anim, {
             toValue: 1,
             friction: 8,

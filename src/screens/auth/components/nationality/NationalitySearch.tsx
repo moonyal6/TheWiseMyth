@@ -6,27 +6,30 @@ import strings from "../../../../localization";
 type NationalitySearchProps = {
   value: string;
   onChangeText: (text: string) => void;
+  placeholder?: string;
 };
 
 const NationalitySearch: React.FC<NationalitySearchProps> = ({
   value,
   onChangeText,
+  placeholder,
 }) => {
   return (
-    <View style={tw`px-4 py-2`}>
+    <View style={tw`z-10`}>
       <View
-        style={tw`flex-row items-center bg-gray-50 rounded-xl px-4 py-2 border border-gray-100`}
+        style={tw`flex-row items-center border bg-white border-[#BBC1CD] rounded-xl px-4 py-2.5`}
       >
         <Image
           source={require("../../../../../assets/icons/search.png")}
-          style={tw`w-5 h-5 opacity-50`}
+          style={tw`w-5 h-5 `}
         />
         <TextInput
           value={value}
           onChangeText={onChangeText}
-          placeholder={strings.auth.steps.nationality.searchPlaceholder}
+          placeholder={placeholder}
           placeholderTextColor='#9CA3AF'
-          style={tw`flex-1 mr-2 text-right font-medium text-base`}
+          style={tw`flex-1 text-right font-medium text-sm text-black`}
+          keyboardShouldPersistTaps='handled'
         />
       </View>
     </View>

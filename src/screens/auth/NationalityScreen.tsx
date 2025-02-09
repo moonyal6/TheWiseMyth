@@ -1,12 +1,5 @@
 import React, { useState } from "react";
-import {
-  View,
-  Pressable,
-  Dimensions,
-  ScrollView,
-  Image,
-  Text,
-} from "react-native";
+import { View, Pressable, Dimensions, ScrollView, Text } from "react-native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { AuthStepParamList } from "../../navigation/AuthStepNavigator";
 import ArabicText from "../../components/shared/ArabicText";
@@ -16,6 +9,8 @@ import { COLORS } from "../../constants/theme";
 import strings from "../../localization";
 import AuthStepContent from "./components/shared/AuthStepContent";
 import NationalitySearch from "./components/nationality/NationalitySearch";
+import { countries } from "../../data/countries";
+import { useLanguage } from "../../hooks/useLanguage";
 
 type Props = {
   navigation: NativeStackNavigationProp<AuthStepParamList>;
@@ -23,22 +18,28 @@ type Props = {
 
 const { height: SCREEN_HEIGHT } = Dimensions.get("window");
 
-// Temporary countries data
-const TEMP_COUNTRIES = [
-  { id: "uk-1", name: "لندن بريطانيا", flag: "🇬🇧" },
-  { id: "uk-2", name: "ساوث بريطانيا", flag: "🇬🇧" },
-  { id: "uk-3", name: "شارلز بريطانيا", flag: "🇬🇧" },
-  { id: "it", name: "ايطاليا", flag: "🇮🇹" },
-  { id: "cn", name: "الصين", flag: "🇨🇳" },
-  { id: "fr", name: "فرنسا", flag: "🇫🇷" },
-  { id: "de", name: "المانيا", flag: "🇩🇪" },
-];
-
 const NationalityScreen = ({ navigation }: Props) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedNationality, setSelectedNationality] = useState<string | null>(
     null,
   );
+  const { isArabic } = useLanguage();
+
+  // Filter countries based on search query
+  const filteredCountries = React.useMemo(() => {
+    if (!searchQuery.trim()) return countries;
+
+    const normalizedQuery = searchQuery.trim().toLowerCase();
+    return countries.filter(
+      (country) =>
+        country.name.toLowerCase().includes(normalizedQuery) ||
+        (country.arabic_name &&
+          country.arabic_name.toLowerCase().includes(normalizedQuery)) ||
+        country.keywords?.some((keyword) =>
+          keyword.toLowerCase().includes(normalizedQuery),
+        ),
+    );
+  }, [searchQuery]);
 
   const handleNext = () => {
     if (selectedNationality) {
@@ -50,36 +51,72 @@ const NationalityScreen = ({ navigation }: Props) => {
   return (
     <AuthStepContent>
       <View style={tw`flex-1 justify-end`}>
-        <Card style={tw`mb-13`}>
+        <Card style={tw`mb-13 px-9 pt-6`}>
           {/* Search Input */}
           <NationalitySearch
             value={searchQuery}
             onChangeText={setSearchQuery}
+            placeholder={
+              isArabic ? "اكتب هنا اسم بلدك للبحث" : "Search for a country"
+            }
           />
 
           {/* Nationality List */}
-          <ScrollView style={tw`h-82`}>
-            {TEMP_COUNTRIES.map((country) => (
-              <Pressable
-                key={country.id}
-                onPress={() => setSelectedNationality(country.id)}
-                style={tw`flex-row items-center px-4 py-3 border-b border-gray-100`}
-              >
-                <View style={tw`flex-row items-center flex-1`}>
-                  <ArabicText style={tw`text-base flex-1`}>
-                    {country.name}
-                  </ArabicText>
-                  <Text style={tw`text-2xl mr-2`}>{country.flag}</Text>
-                </View>
-                {selectedNationality === country.id && (
+          <ScrollView
+            style={tw`h-[320px] -mt-2.5`}
+            keyboardShouldPersistTaps='handled'
+            showsVerticalScrollIndicator={false}
+          >
+            <View style={tw`h-5`} />
+            {filteredCountries.length === 0 ? (
+              <View style={tw`py-8 items-center`}>
+                <Text style={tw`text-gray-500 text-sm`}>
+                  {isArabic ? "لا توجد نتائج" : "No results found"}
+                </Text>
+              </View>
+            ) : (
+              filteredCountries.map((country) => (
+                <Pressable
+                  key={country.id}
+                  onPress={() => setSelectedNationality(country.id)}
+                  style={tw`flex-row items-center py-2.5 pr-4.5 pl-2.5 ${
+                    selectedNationality === country.id
+                      ? "border border-[#D8DADC] rounded-[10px] bg-[#F4F5F6]"
+                      : ""
+                  }`}
+                >
+                  {selectedNationality === country.id && (
+                    <View
+                      style={tw`w-4 h-4 rounded-full bg-[#412787] justify-center items-center `}
+                    >
+                      <View style={tw`w-1.5 h-1.5 rounded-full bg-white`} />
+                    </View>
+                  )}
+                  {selectedNationality !== country.id && (
+                    <View style={tw`w-4 ml-4`} />
+                  )}
+
                   <View
-                    style={tw`w-5 h-5 rounded-full bg-[${COLORS.primary.purple}] justify-center items-center`}
+                    style={tw`flex-row items-center flex-1 justify-end `}
                   >
-                    <View style={tw`w-2 h-2 rounded-full bg-white`} />
+                    {isArabic ? (
+                      <ArabicText
+                        style={tw`text-lg flex-1 text-right mr-4.5 font-medium`}
+                      >
+                        {country.arabic_name}
+                      </ArabicText>
+                    ) : (
+                      <Text
+                        style={tw`text-lg flex-1 text-right mr-3 font-medium`}
+                      >
+                        {country.name}
+                      </Text>
+                    )}
+                    <Text style={tw`text-2xl`}>{country.flag}</Text>
                   </View>
-                )}
-              </Pressable>
-            ))}
+                </Pressable>
+              ))
+            )}
           </ScrollView>
         </Card>
 
@@ -90,7 +127,7 @@ const NationalityScreen = ({ navigation }: Props) => {
             disabled={!selectedNationality}
             style={({ pressed }) => [
               tw`w-full h-14 rounded-xl justify-center items-center`,
-              { backgroundColor: COLORS.primary.purple },
+              { backgroundColor: "#412787" },
               !selectedNationality && tw`opacity-50`,
               pressed && !selectedNationality && { opacity: 0.3 },
             ]}

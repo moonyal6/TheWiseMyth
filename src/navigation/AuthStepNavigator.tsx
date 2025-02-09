@@ -11,6 +11,7 @@ import BirthDateScreen from "../screens/auth/BirthDateScreen";
 import BirthTimeScreen from "../screens/auth/BirthTimeScreen";
 import NationalityScreen from "../screens/auth/NationalityScreen";
 import tw from "../utils/tailwind";
+import { AuthStackParamList } from "./AuthNavigator";
 
 export type AuthStepParamList = {
   Gender: undefined;
@@ -28,17 +29,32 @@ const STEPS = {
   Nationality: { title: "اختر جنسيتك", step: 4 },
 };
 
+type NavigationProp = NativeStackNavigationProp<
+  AuthStackParamList & AuthStepParamList
+>;
+
 const AuthStepNavigator = () => {
   const [currentRoute, setCurrentRoute] = React.useState("Gender");
-  const navigation = useNavigation();
+  const navigation = useNavigation<NavigationProp>();
 
   const handleBack = () => {
     if (currentRoute === "Gender") {
-      // If we're on the first step, go back to SignUp screen
-      navigation.goBack();
+      // If we're on the first step, navigate back to SignUp screen
+      navigation.navigate("SignUp");
     } else {
-      // Otherwise, go back to the previous step
-      navigation.goBack();
+      // Navigate to the previous step based on current route
+      const steps = [
+        "Gender",
+        "BirthDate",
+        "BirthTime",
+        "Nationality",
+      ] as const;
+      const currentIndex = steps.indexOf(
+        currentRoute as (typeof steps)[number],
+      );
+      if (currentIndex > 0) {
+        navigation.navigate(steps[currentIndex - 1]);
+      }
     }
   };
 

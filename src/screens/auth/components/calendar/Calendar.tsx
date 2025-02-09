@@ -7,6 +7,8 @@ import {
   StyleSheet,
   ViewStyle,
   TextStyle,
+  Modal,
+  ScrollView,
 } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import tw from "../../../../utils/tailwind";
@@ -45,7 +47,33 @@ const Calendar: React.FC<CalendarProps> = ({
   const [currentMonth, setCurrentMonth] = React.useState(
     selectedDate || new Date(),
   );
+  const [showYearPicker, setShowYearPicker] = React.useState(false);
   const slideAnim = React.useRef(new Animated.Value(0)).current;
+  const scrollViewRef = React.useRef<ScrollView>(null);
+
+  // Generate years array (from 1900 to current year)
+  const years = React.useMemo(() => {
+    const currentYear = new Date().getFullYear();
+    const startYear = 1900;
+    const length = currentYear - startYear + 1;
+    return Array.from({ length }, (_, i) => startYear + i).reverse();
+  }, []);
+
+  React.useEffect(() => {
+    if (showYearPicker) {
+      // Wait for modal animation to complete
+      setTimeout(() => {
+        const currentYear = currentMonth.getFullYear();
+        const yearIndex = years.findIndex((year) => year === currentYear);
+        if (yearIndex !== -1 && scrollViewRef.current) {
+          scrollViewRef.current.scrollTo({
+            y: yearIndex * 56, // 56 = height of each year item (py-4 = 32px + extra space)
+            animated: false,
+          });
+        }
+      }, 100);
+    }
+  }, [showYearPicker]);
 
   const getDaysInMonth = (date: Date) => {
     const year = date.getFullYear();
@@ -55,8 +83,8 @@ const Calendar: React.FC<CalendarProps> = ({
 
     const days: (number | null)[] = [];
 
-    // Add empty days for padding (RTL)
-    for (let i = 6; i > firstDayOfMonth; i--) {
+    // Add empty days for padding at the start
+    for (let i = 0; i < firstDayOfMonth; i++) {
       days.push(null);
     }
 
@@ -86,6 +114,13 @@ const Calendar: React.FC<CalendarProps> = ({
     setCurrentMonth(newMonth);
   };
 
+  const handleYearSelect = (year: number) => {
+    const newDate = new Date(currentMonth);
+    newDate.setFullYear(year);
+    setCurrentMonth(newDate);
+    setShowYearPicker(false);
+  };
+
   const isSelectedDay = (day: number) => {
     if (!selectedDate) return false;
     return (
@@ -105,7 +140,7 @@ const Calendar: React.FC<CalendarProps> = ({
   };
 
   const isWeekend = (dayIndex: number) => {
-    return dayIndex === 5 || dayIndex === 6; // Friday (5) or Saturday (6)
+    return dayIndex === 6 || dayIndex === 0; // Saturday (6) or Sunday (0)
   };
 
   const getColumnIndex = (index: number) => {
@@ -121,40 +156,50 @@ const Calendar: React.FC<CalendarProps> = ({
   return (
     <View
       style={[
-        tw`pt-9 px-4.5 h-83`,
+        tw`pt-6 px-4.5 h-83`,
         withBackground && tw`bg-white rounded-[10px]`,
         style,
       ]}
     >
       {/* Month Navigation */}
-      <View style={tw`flex-row items-center justify-between mb-1`}>
+      <View style={tw`flex-row items-center justify-between`}>
+        <View style={tw`w-6 h-6`}>
+          <Pressable
+            onPress={() => handleMonthChange(-1)}
+            style={({ pressed }) => [
+              tw`absolute -top-3 -left-3 -right-3 -bottom-3 rounded-full justify-center items-center`,
+              pressed && tw`bg-black/5`,
+            ]}
+          >
+            <Feather name='chevron-left' size={24} color='#000' />
+          </Pressable>
+        </View>
+
         <Pressable
-          onPress={() => handleMonthChange(1)}
+          onPress={() => setShowYearPicker(true)}
           style={({ pressed }) => [
-            tw`w-6 h-6 rounded-full justify-center items-center`,
+            tw`items-center px-4 py-2 rounded-xl`,
             pressed && tw`bg-black/5`,
           ]}
         >
-          <Feather name='chevron-left' size={24} color='#000' />
-        </Pressable>
-
-        <View style={tw`items-center`}>
           <ArabicText style={tw`text-base font-medium`}>
             {`${
               MONTHS_AR[currentMonth.getMonth()]
             } ${currentMonth.getFullYear()}`}
           </ArabicText>
-        </View>
-
-        <Pressable
-          onPress={() => handleMonthChange(-1)}
-          style={({ pressed }) => [
-            tw`w-6 h-6 rounded-full justify-center items-center`,
-            pressed && tw`bg-black/5`,
-          ]}
-        >
-          <Feather name='chevron-right' size={24} color='#000' />
         </Pressable>
+
+        <View style={tw`w-6 h-6`}>
+          <Pressable
+            onPress={() => handleMonthChange(1)}
+            style={({ pressed }) => [
+              tw`absolute -top-3 -left-3 -right-3 -bottom-3 rounded-full justify-center items-center`,
+              pressed && tw`bg-black/5`,
+            ]}
+          >
+            <Feather name='chevron-right' size={24} color='#000' />
+          </Pressable>
+        </View>
       </View>
 
       {/* Days Header */}
@@ -221,6 +266,63 @@ const Calendar: React.FC<CalendarProps> = ({
           ))}
         </View>
       </Animated.View>
+
+      {/* Year Picker Modal */}
+      <Modal
+        visible={showYearPicker}
+        transparent
+        animationType='fade'
+        onRequestClose={() => setShowYearPicker(false)}
+      >
+        <View style={tw`flex-1 bg-black/50 justify-center items-center px-6`}>
+          <Pressable
+            style={tw`absolute inset-0`}
+            onPress={() => setShowYearPicker(false)}
+          />
+          <View
+            style={tw`bg-white rounded-3xl w-full max-w-45 overflow-hidden`}
+          >
+            <ScrollView
+              ref={scrollViewRef}
+              style={tw`h-72`}
+              showsVerticalScrollIndicator={false}
+              contentContainerStyle={tw`py-2`}
+            >
+              {years.map((year) => (
+                <Pressable
+                  key={year}
+                  onPress={() => handleYearSelect(year)}
+                  style={({ pressed }) => [
+                    tw`py-4 px-6`,
+                    year === currentMonth.getFullYear() && {
+                      backgroundColor: `${COLORS.primary.purple}1A`, // 10% opacity
+                    },
+                    pressed && tw`bg-black/5`,
+                  ]}
+                >
+                  <ArabicText
+                    style={
+                      {
+                        ...tw`text-base text-center`,
+                        color:
+                          year === currentMonth.getFullYear()
+                            ? COLORS.primary.purple
+                            : "#000",
+                        fontWeight:
+                          year === currentMonth.getFullYear()
+                            ? "bold"
+                            : "normal",
+                      } as TextStyle
+                    }
+                  >
+                    {year}
+                  </ArabicText>
+                </Pressable>
+              ))}
+            </ScrollView>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 };

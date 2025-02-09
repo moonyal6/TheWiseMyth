@@ -43,7 +43,7 @@ const AuthStepHeader: React.FC<AuthStepHeaderProps> = ({
         </Pressable>
       </View>
       <StepIndicator
-        currentStep={currentStep}
+        currentStep={currentStep - 1}
         totalSteps={totalSteps}
         isInitialScreen={isInitialScreen}
       />
