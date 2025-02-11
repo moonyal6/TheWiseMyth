@@ -1,0 +1,6 @@
+[ ] Replace Logo text with actual Logo
+[ ] Fix blur in GradietBackground
+[ ] Reverse step indicator animation
+[ ] Add GradietBackground to Account Setup screens
+[ ] Fix Calendar day to day of week realtion
+[ ] make calender swipable

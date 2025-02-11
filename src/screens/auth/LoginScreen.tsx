@@ -61,11 +61,18 @@ const LoginScreen = ({ navigation }: Props) => {
       // Simulate API call
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
-      // Navigate to MainApp using root navigation
+      // Navigate to MainApp and set initial route to Home
       rootNavigation.dispatch(
         CommonActions.reset({
           index: 0,
-          routes: [{ name: "MainApp" }],
+          routes: [
+            {
+              name: "MainApp",
+              state: {
+                routes: [{ name: "Home" }],
+              },
+            },
+          ],
         }),
       );
     } catch (error) {

@@ -7,6 +7,7 @@ interface CardProps {
   style?: ViewStyle;
   withBackground?: boolean;
   withBorder?: boolean;
+  withBackCard?: boolean;
 }
 
 const Card: React.FC<CardProps> = ({
@@ -14,22 +15,25 @@ const Card: React.FC<CardProps> = ({
   style,
   withBackground = true,
   withBorder = false,
+  withBackCard = true,
 }) => {
   return (
     <View style={tw`relative`}>
       {/* Background Card */}
-      <View
-        style={[
-          tw`absolute -top-4.5 h-1/2 left-4.5 right-4.5 flex-1 rounded-[28px] bg-white/95`,
-          { opacity: 0.48 },
-        ]}
-      />
+      {withBackCard && (
+        <View
+          style={[
+            tw`absolute -top-4.5 h-1/2 left-4.5 right-4.5 flex-1 rounded-[28px] bg-[#FAF4FA]`,
+            { opacity: 1 },
+          ]}
+        />
+      )}
 
       {/* Main Card */}
       <View
         style={[
           tw`w-full rounded-[28px] overflow-hidden`,
-          withBackground && tw`bg-white/95`,
+          withBackground && tw`bg-white`,
           withBorder && tw`border border-gray-100`,
           style,
         ]}

@@ -39,22 +39,11 @@ const AuthStepNavigator = () => {
 
   const handleBack = () => {
     if (currentRoute === "Gender") {
-      // If we're on the first step, navigate back to SignUp screen
-      navigation.navigate("SignUp");
+      // If we're on the first step, replace current screen with SignUp screen
+      navigation.replace("SignUp");
     } else {
-      // Navigate to the previous step based on current route
-      const steps = [
-        "Gender",
-        "BirthDate",
-        "BirthTime",
-        "Nationality",
-      ] as const;
-      const currentIndex = steps.indexOf(
-        currentRoute as (typeof steps)[number],
-      );
-      if (currentIndex > 0) {
-        navigation.navigate(steps[currentIndex - 1]);
-      }
+      // Go back to the previous screen in the stack
+      navigation.goBack();
     }
   };
 
@@ -74,7 +63,9 @@ const AuthStepNavigator = () => {
         <Stack.Navigator
           screenOptions={{
             headerShown: false,
-            animation: "fade",
+            animation: "slide_from_left",
+            animationDuration: 200,
+            animationTypeForReplace: "push",
           }}
           screenListeners={{
             state: (e) => {

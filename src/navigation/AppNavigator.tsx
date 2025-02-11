@@ -12,11 +12,15 @@ import AuthNavigator from "./AuthNavigator";
 import HomeScreen from "../screens/HomeScreen";
 import ProfileScreen from "../screens/ProfileScreen";
 import SettingsScreen from "../screens/SettingsScreen";
+import SubscriptionScreen from "../screens/SubscriptionScreen";
+import DateSelectionScreen from "../screens/DateSelectionScreen";
 
 // Type definitions
 export type RootStackParamList = {
   Auth: undefined;
   MainApp: undefined;
+  Subscription: undefined;
+  DateSelection: undefined;
 };
 
 export type MainTabParamList = {
@@ -90,6 +94,8 @@ const AppNavigator = () => {
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         <Stack.Screen name='Auth' component={AuthNavigator} />
         <Stack.Screen name='MainApp' component={MainTabs} />
+        <Stack.Screen name='Subscription' component={SubscriptionScreen} />
+        <Stack.Screen name='DateSelection' component={DateSelectionScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
