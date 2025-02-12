@@ -5,26 +5,24 @@ import tw from "../../utils/tailwind";
 interface CardProps {
   children: React.ReactNode;
   style?: ViewStyle;
-  withBackground?: boolean;
-  withBorder?: boolean;
   withBackCard?: boolean;
+  backCardHeight?: number;
 }
 
 const Card: React.FC<CardProps> = ({
   children,
   style,
-  withBackground = true,
-  withBorder = false,
   withBackCard = true,
+  backCardHeight = 18,
 }) => {
   return (
-    <View style={tw`relative`}>
+    <View style={tw`relative mt-4.5`}>
       {/* Background Card */}
       {withBackCard && (
         <View
           style={[
-            tw`absolute -top-4.5 h-1/2 left-4.5 right-4.5 flex-1 rounded-[28px] bg-[#FAF4FA]`,
-            { opacity: 1 },
+            tw`absolute h-1/2 left-4.5 right-4.5 flex-1 rounded-[28px] bg-white/48`,
+            { top: -backCardHeight },
           ]}
         />
       )}
@@ -32,9 +30,7 @@ const Card: React.FC<CardProps> = ({
       {/* Main Card */}
       <View
         style={[
-          tw`w-full rounded-[28px] overflow-hidden`,
-          withBackground && tw`bg-white`,
-          withBorder && tw`border border-gray-100`,
+          tw`w-full rounded-[28px] overflow-hidden bg-white`,
           style,
         ]}
       >

@@ -55,7 +55,7 @@ const AuthStepLayout: React.FC<AuthStepLayoutProps> = ({
         <AuthStepHeader
           title={title}
           currentStep={currentStep}
-          totalSteps={totalSteps}
+          totalSteps={totalSteps -1}
           onBack={onBack}
           isInitialScreen={isInitialScreen}
         />

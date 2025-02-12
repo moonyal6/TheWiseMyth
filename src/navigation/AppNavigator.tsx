@@ -14,6 +14,7 @@ import ProfileScreen from "../screens/ProfileScreen";
 import SettingsScreen from "../screens/SettingsScreen";
 import SubscriptionScreen from "../screens/SubscriptionScreen";
 import DateSelectionScreen from "../screens/DateSelectionScreen";
+import TipsAndTricksScreen from "../screens/TipsAndTricksScreen";
 
 // Type definitions
 export type RootStackParamList = {
@@ -21,6 +22,7 @@ export type RootStackParamList = {
   MainApp: undefined;
   Subscription: undefined;
   DateSelection: undefined;
+  TipsAndTricks: undefined;
 };
 
 export type MainTabParamList = {
@@ -96,6 +98,7 @@ const AppNavigator = () => {
         <Stack.Screen name='MainApp' component={MainTabs} />
         <Stack.Screen name='Subscription' component={SubscriptionScreen} />
         <Stack.Screen name='DateSelection' component={DateSelectionScreen} />
+        <Stack.Screen name='TipsAndTricks' component={TipsAndTricksScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

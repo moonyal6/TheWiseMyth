@@ -43,8 +43,7 @@ const NationalityScreen = ({ navigation }: Props) => {
 
   const handleNext = () => {
     if (selectedNationality) {
-      // Navigate to next screen or complete the flow
-      console.log("Selected nationality:", selectedNationality);
+      navigation.navigate("AccountCreated");
     }
   };
 
@@ -96,9 +95,7 @@ const NationalityScreen = ({ navigation }: Props) => {
                     <View style={tw`w-4 ml-4`} />
                   )}
 
-                  <View
-                    style={tw`flex-row items-center flex-1 justify-end `}
-                  >
+                  <View style={tw`flex-row items-center flex-1 justify-end `}>
                     {isArabic ? (
                       <ArabicText
                         style={tw`text-lg flex-1 text-right mr-4.5 font-medium`}

@@ -1,36 +1,48 @@
 import React, { useState } from "react";
-import { View, Pressable } from "react-native";
+import { View, Pressable, Dimensions } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation } from "@react-navigation/native";
-import Slider from "@react-native-community/slider";
+import MultiSlider from "@ptomasroos/react-native-multi-slider";
 import { Feather } from "@expo/vector-icons";
 import tw from "../utils/tailwind";
 import ArabicText from "../components/shared/ArabicText";
 import Card from "../components/shared/Card";
 import GradientBackground from "../components/shared/GradientBackground";
-import TimePicker from "../screens/auth/components/time/TimePicker";
+import DateScreenTimePicker from "./date/components/DateScreenTimePicker";
 import Button from "../components/shared/Button";
 
 type TimeState = {
   hours: number;
   minutes: number;
-  seconds: number;
   period: "AM" | "PM";
+  year: number;
+  month: number;
+  day: number;
 };
+
+type SpeedRange = [number, number];
 
 const DateSelectionScreen = () => {
   const navigation = useNavigation();
-  const [sliderValue, setSliderValue] = useState(50);
+  const { width: SCREEN_WIDTH } = Dimensions.get("window");
+  const SLIDER_LENGTH = (SCREEN_WIDTH - 32 * 2 - 24 * 2) * 0.65;
+
   const [selectedTime, setSelectedTime] = useState<TimeState>({
     hours: 9,
     minutes: 0,
-    seconds: 0,
     period: "AM",
+    year: 2024,
+    month: 1,
+    day: 1,
   });
-  const [planetSpeed, setPlanetSpeed] = useState(50);
+  const [speedRange, setSpeedRange] = useState<SpeedRange>([25, 75]);
 
   const handleTimeSelect = (time: TimeState) => {
     setSelectedTime(time);
+  };
+
+  const handleSpeedChange = (values: number[]) => {
+    setSpeedRange(values as SpeedRange);
   };
 
   const handleSave = () => {
@@ -43,54 +55,96 @@ const DateSelectionScreen = () => {
         {/* Header */}
         <View style={tw`bg-white rounded-b-4xl pt-6 pb-3.5`}>
           <View style={tw`px-8 flex-row items-center justify-between`}>
-            <Pressable onPress={() => navigation.goBack()}>
-              <Feather name='chevron-left' size={24} color='#2C2287' />
-            </Pressable>
+            <View style={tw`w-6`} />
+
             <ArabicText style={tw`text-xl font-bold text-black`}>
               اختر التاريخ
             </ArabicText>
-            <View style={tw`w-6`} />
+            <Pressable onPress={() => navigation.goBack()}>
+              <Feather name='chevron-right' size={24} color='#2C2287' />
+            </Pressable>
           </View>
         </View>
 
-        <View style={tw`flex-1 px-4 py-6`}>
+        <View style={tw`flex-1 px-8 py-6`}>
           {/* Description */}
-          <View style={tw`mb-6`}>
-            <ArabicText style={tw`text-lg text-center text-gray-600`}>
-              من فضلك قم بإدخال المعلومات بشكل دقيق
+          <View style={tw`px-8 mb-10`}>
+            <ArabicText style={tw`text-center text-sm opacity-60`}>
+              يرجى ادخال معلومات صحيحة وموثقة عند ادخالك المعلومات تحفظ النتائج
+              ولا تظهر معلومات صحيحة
             </ArabicText>
           </View>
 
           {/* Time Picker Card */}
-          <Card style={tw`mb-6`}>
-            <TimePicker
+          <Card style={tw`mb-4.5 h-82`}>
+            <DateScreenTimePicker
               selectedTime={selectedTime}
               onTimeSelect={handleTimeSelect}
             />
           </Card>
 
           {/* Planet Speed Card */}
-          <Card withBackCard={false} style={tw`mb-6`}>
-            <View style={tw`p-6`}>
-              <View style={tw`flex-row justify-between mb-4`}>
-                <ArabicText style={tw`text-gray-400`}>بطيء</ArabicText>
-                <ArabicText style={tw`text-gray-400`}>سريع</ArabicText>
+          <Card withBackCard={false} style={tw`mb-9`}>
+            <View style={tw`py-7 px-3.5`}>
+              <ArabicText
+                style={tw`text-black
+text-base
+font-bold text-center mb-4`}
+              >
+                اختر سرعة انتقال الكواكب
+              </ArabicText>
+              <View style={tw`flex-row items-center justify-between px-2`}>
+                <ArabicText style={tw`text-xs text-black font-bold w-10`}>
+                  بطيء
+                </ArabicText>
+                <View style={tw`flex-1 mx-3 items-center`}>
+                  <MultiSlider
+                    values={speedRange}
+                    onValuesChange={handleSpeedChange}
+                    min={0}
+                    max={100}
+                    step={1}
+                    allowOverlap={false}
+                    snapped
+                    enableLabel={false}
+                    sliderLength={SLIDER_LENGTH}
+                    containerStyle={{ height: 48 }}
+                    selectedStyle={{
+                      backgroundColor: "#7258F0",
+                      height: 2,
+                    }}
+                    unselectedStyle={{
+                      backgroundColor: "#CAC2ED",
+                      height: 2,
+                    }}
+                    trackStyle={{ height: 3 }}
+                    markerStyle={{
+                      backgroundColor: "white",
+                      width: 18,
+                      height: 18,
+                      borderRadius: 12,
+                      borderWidth: 2,
+                      borderColor: "#7258F0",
+                    }}
+                    pressedMarkerStyle={{
+                      backgroundColor: "#e4e2ec",
+                      borderWidth: 2,
+                      borderColor: "#7258F0",
+                      width: 24,
+                      height: 24,
+                      borderRadius: 14,
+                    }}
+                  />
+                </View>
+                <ArabicText style={tw`text-xs text-black font-bold text-right`}>
+                  سريع
+                </ArabicText>
               </View>
-              <Slider
-                value={planetSpeed}
-                onValueChange={setPlanetSpeed}
-                minimumValue={0}
-                maximumValue={100}
-                step={1}
-                minimumTrackTintColor='#6366F1'
-                maximumTrackTintColor='#E5E7EB'
-                thumbTintColor='#6366F1'
-              />
             </View>
           </Card>
 
           {/* Save Button */}
-          <View style={tw`mt-auto`}>
+          <View style={tw``}>
             <Button
               onPress={handleSave}
               text='حفظ'

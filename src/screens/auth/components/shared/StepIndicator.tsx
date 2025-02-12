@@ -6,12 +6,14 @@ interface StepIndicatorProps {
   currentStep: number;
   totalSteps: number;
   isInitialScreen?: boolean;
+  isFinalStep?: boolean;
 }
 
 const StepIndicator: React.FC<StepIndicatorProps> = ({
   currentStep,
   totalSteps,
   isInitialScreen = false,
+  isFinalStep = false,
 }) => {
   const inactiveStepStyle = tw`w-5 h-[4px] rounded-full bg-[#cfb0f0]`;
   const activeStepStyle = tw`w-5 h-[4px] rounded-full bg-primary-purple`;
@@ -20,8 +22,8 @@ const StepIndicator: React.FC<StepIndicatorProps> = ({
   const steps = Array(totalSteps)
     .fill(null)
     .map((_, index) => ({
-      // Step is active if it's less than or equal to current step (in RTL)
-      active: totalSteps - index <= currentStep,
+      // Step is active if it's final step or less than or equal to current step (in RTL)
+      active: isFinalStep || totalSteps - index <= currentStep,
     }));
 
   const animations = steps.map(

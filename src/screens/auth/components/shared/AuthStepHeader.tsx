@@ -11,6 +11,7 @@ interface AuthStepHeaderProps {
   totalSteps: number;
   onBack: () => void;
   isInitialScreen?: boolean;
+  isFinalStep?: boolean;
 }
 
 const AuthStepHeader: React.FC<AuthStepHeaderProps> = ({
@@ -19,6 +20,7 @@ const AuthStepHeader: React.FC<AuthStepHeaderProps> = ({
   totalSteps,
   onBack,
   isInitialScreen = false,
+  isFinalStep = false,
 }) => {
   return (
     <View
@@ -30,7 +32,7 @@ const AuthStepHeader: React.FC<AuthStepHeaderProps> = ({
       <View style={tw`flex-row items-center justify-between px-8 pt-10 pb-4`}>
         <View style={tw`w-6`} />
         <ArabicText style={tw`text-xl font-bold text-black`}>
-          {`${title} ${currentStep}/${totalSteps}`}
+          {isFinalStep ? title : `${title} ${currentStep}/${totalSteps}`}
         </ArabicText>
         <Pressable
           onPress={onBack}
@@ -46,6 +48,7 @@ const AuthStepHeader: React.FC<AuthStepHeaderProps> = ({
         currentStep={currentStep - 1}
         totalSteps={totalSteps}
         isInitialScreen={isInitialScreen}
+        isFinalStep={isFinalStep}
       />
     </View>
   );

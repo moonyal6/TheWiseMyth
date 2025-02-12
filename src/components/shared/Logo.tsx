@@ -1,7 +1,8 @@
 import React from "react";
-import { Text, View, StyleSheet, Platform, ViewStyle } from "react-native";
+import { View, StyleSheet, ViewStyle } from "react-native";
+import { SvgXml } from "react-native-svg";
 import tw from "../../utils/tailwind";
-import { COLORS } from "../../constants/theme";
+import { astroFutrueLogo } from "../../constants/icons";
 
 type LogoProps = {
   containerStyle?: ViewStyle;
@@ -10,18 +11,9 @@ type LogoProps = {
 const Logo: React.FC<LogoProps> = ({ containerStyle }) => {
   return (
     <View style={[tw`items-center`, containerStyle]}>
-      <Text style={[tw`text-6xl`, styles.logoText]}>ASTRO</Text>
-      <Text style={[tw`text-6xl`, styles.logoText]}>FUTURE</Text>
+      <SvgXml xml={astroFutrueLogo} width={210} height={127} />
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  logoText: {
-    color: COLORS.primary.magenta,
-    fontWeight: Platform.select({ ios: "800", android: "bold" }),
-    letterSpacing: 2,
-  },
-});
 
 export default Logo;

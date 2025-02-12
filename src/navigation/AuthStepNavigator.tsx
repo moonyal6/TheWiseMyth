@@ -10,6 +10,7 @@ import GenderScreen from "../screens/auth/GenderScreen";
 import BirthDateScreen from "../screens/auth/BirthDateScreen";
 import BirthTimeScreen from "../screens/auth/BirthTimeScreen";
 import NationalityScreen from "../screens/auth/NationalityScreen";
+import AccountCreatedScreen from "../screens/auth/AccountCreatedScreen";
 import tw from "../utils/tailwind";
 import { AuthStackParamList } from "./AuthNavigator";
 
@@ -18,6 +19,7 @@ export type AuthStepParamList = {
   BirthDate: undefined;
   BirthTime: undefined;
   Nationality: undefined;
+  AccountCreated: undefined;
 };
 
 const Stack = createNativeStackNavigator<AuthStepParamList>();
@@ -27,6 +29,7 @@ const STEPS = {
   BirthDate: { title: "اختر يوم الولادة", step: 2 },
   BirthTime: { title: "اختر وقت الولادة", step: 3 },
   Nationality: { title: "اختر جنسيتك", step: 4 },
+  AccountCreated: { title: "تم إنشاء حسابك بنجاح!", step: 5 },
 };
 
 type NavigationProp = NativeStackNavigationProp<
@@ -57,6 +60,7 @@ const AuthStepNavigator = () => {
           totalSteps={4}
           onBack={handleBack}
           isInitialScreen={currentRoute === "Gender"}
+          isFinalStep={currentRoute === "AccountCreated"}
         />
 
         {/* Stack Navigator */}
@@ -80,6 +84,10 @@ const AuthStepNavigator = () => {
           <Stack.Screen name='BirthDate' component={BirthDateScreen} />
           <Stack.Screen name='BirthTime' component={BirthTimeScreen} />
           <Stack.Screen name='Nationality' component={NationalityScreen} />
+          <Stack.Screen
+            name='AccountCreated'
+            component={AccountCreatedScreen}
+          />
         </Stack.Navigator>
       </SafeAreaView>
     </GradientBackground>

@@ -48,10 +48,7 @@ const DatePickerWheel: React.FC<DatePickerWheelProps> = ({
   };
 
   return (
-    <TimePicker
-            selectedTime={selectedTime}
-            onTimeSelect={setSelectedTime}
-          />
+    <TimePicker selectedTime={selectedTime} onTimeSelect={setSelectedTime} />
   );
 };
 

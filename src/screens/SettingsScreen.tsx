@@ -2,6 +2,9 @@ import React from "react";
 import { View, ScrollView, Image } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { LinearGradient } from "expo-linear-gradient";
+import { useNavigation } from "@react-navigation/native";
+import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import type { RootStackParamList } from "../navigation/AppNavigator";
 import tw from "../utils/tailwind";
 import ArabicText from "../components/shared/ArabicText";
 import Card from "../components/shared/Card";
@@ -21,6 +24,8 @@ const Divider = () => <View style={tw`h-[1px] my-1 bg-[#F4F5F6]`} />;
 const SettingsScreen = () => {
   const [isDarkMode, setIsDarkMode] = React.useState(false);
   const [notificationsEnabled, setNotificationsEnabled] = React.useState(true);
+  const navigation =
+    useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
   return (
     <GradientBackground hideTopBlob>
@@ -84,10 +89,7 @@ const SettingsScreen = () => {
                     <ArabicText style={tw`mr-1`}>
                       {isDarkMode ? "تفعيل" : "تعطيل"}
                     </ArabicText>
-                    <Toggle
-                      value={isDarkMode}
-                      onValueChange={setIsDarkMode}
-                    />
+                    <Toggle value={isDarkMode} onValueChange={setIsDarkMode} />
                   </View>
                 }
               />
@@ -137,11 +139,7 @@ const SettingsScreen = () => {
                 label='نظام العام'
                 onPress={() => console.log("Annual System")}
                 leftIcon='chevron-left'
-                leftElement={
-                  <ArabicText style={tw``}>
-                    بليسيدوس
-                  </ArabicText>
-                }
+                leftElement={<ArabicText style={tw``}>بليسيدوس</ArabicText>}
               />
               <Divider />
               <SettingItem
@@ -178,7 +176,7 @@ const SettingsScreen = () => {
               <SettingItem
                 icon='help-circle'
                 label='نصائح وحيل'
-                onPress={() => console.log("Tips and Tricks")}
+                onPress={() => navigation.navigate("TipsAndTricks")}
                 leftIcon='chevron-left'
               />
               <Divider />
@@ -213,9 +211,9 @@ const SettingsScreen = () => {
                 leftIcon='chevron-left'
               />
             </SettingsSection>
-      </View>
+          </View>
         </ScrollView>
-    </SafeAreaView>
+      </SafeAreaView>
     </GradientBackground>
   );
 };

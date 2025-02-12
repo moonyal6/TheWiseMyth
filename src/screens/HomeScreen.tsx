@@ -21,6 +21,7 @@ import {
   CALENDAR_DATA,
   QUICK_ACTIONS,
 } from "./home/constants";
+import { planet1, planet2, polygon } from "../constants/icons";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
@@ -113,18 +114,25 @@ const HomeScreen = () => {
           animationType='fade'
           onRequestClose={() => setShowPopup(false)}
         >
-          <View style={tw`flex-1 bg-black/50 justify-center items-center px-6`}>
+          {/* make the background color 80% opacity  */}
+          <View
+            style={tw`flex-1 bg-[#2C2287]/80 justify-center items-center px-6`}
+          >
             <Pressable
               style={tw`absolute inset-0`}
               onPress={() => setShowPopup(false)}
             />
             <View style={tw`w-full max-w-md`}>
-              <Card>
-                <View style={tw`p-4 `}>
-                  <View style={tw`flex-row items-center justify-center`}>
-                    {/* <SvgXml xml={planet1} width={30} height={30} />
-                    <SvgXml xml={polygon} width={30} height={30} />
-                    <SvgXml xml={planet2} width={30} height={30} /> */}
+              <Card style={tw`overflow-visible`} backCardHeight={32}>
+                <View style={tw`p-4 pt-16 overflow-visable`}>
+                  <View
+                    style={tw`flex-row items-center justify-center gap-1 absolute left-1/2 -translate-x-1/2 right-1/2 -top-10`}
+                  >
+                    <SvgXml xml={planet1} width={105} height={105} />
+                    <View style={tw`mt-4`}>
+                      <SvgXml xml={polygon} width={27} height={27} />
+                    </View>
+                    <SvgXml xml={planet2} width={105} height={105} />
                   </View>
                   <ArabicText
                     style={tw`text-2xl font-bold mt-3.5 mb-2 text-center`}
@@ -137,9 +145,9 @@ const HomeScreen = () => {
                 </View>
               </Card>
             </View>
-      </View>
+          </View>
         </Modal>
-    </SafeAreaView>
+      </SafeAreaView>
     </GradientBackground>
   );
 };

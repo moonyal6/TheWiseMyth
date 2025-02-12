@@ -11,27 +11,71 @@ import { LinearGradient } from "expo-linear-gradient";
 import ArabicText from "../../../../components/shared/ArabicText";
 import tw from "../../../../utils/tailwind";
 
+type SizeVariant = "small" | "medium";
+
+interface SizeConfig {
+  itemHeight: number;
+  fontSize: number;
+  width: number;
+  visibleItems: number;
+  fadeHeight: number;
+}
+
+const SIZE_VARIANTS: Record<SizeVariant, SizeConfig> = {
+  small: {
+    itemHeight: 58,
+    fontSize: 18,
+    width: 10,
+    visibleItems: 5,
+    fadeHeight: 78,
+  },
+  medium: {
+    itemHeight: 58,
+    fontSize: 20,
+    width: 14,
+    visibleItems: 3,
+    fadeHeight: 28,
+  },
+};
+
 interface InfiniteScrollerProps {
   values: string[];
   selectedValue: string;
   onValueChange: (value: string) => void;
-  width: number;
+  width?: number;
+  size?: SizeVariant;
+  itemHeight?: number;
+  fontSize?: number;
+  visibleItems?: number;
+  fadeHeight?: number;
   style?: ViewStyle;
+  textStyle?: TextStyle;
 }
-
-const VISIBLE_ITEMS = 3;
-const ITEM_HEIGHT = 58;
 
 const InfiniteScroller: React.FC<InfiniteScrollerProps> = ({
   values,
   selectedValue,
   onValueChange,
   width,
+  size = "medium",
+  itemHeight,
+  fontSize,
+  visibleItems,
+  fadeHeight,
   style,
+  textStyle,
 }) => {
   const scrollViewRef = useRef<ScrollView>(null);
   const [containerHeight, setContainerHeight] = React.useState(0);
   const [isScrolling, setIsScrolling] = React.useState(false);
+
+  // Get size configuration
+  const sizeConfig = SIZE_VARIANTS[size];
+  const ITEM_HEIGHT = itemHeight || sizeConfig.itemHeight;
+  const VISIBLE_ITEMS = visibleItems || sizeConfig.visibleItems;
+  const FONT_SIZE = fontSize || sizeConfig.fontSize;
+  const SCROLLER_WIDTH = width || sizeConfig.width;
+  const FADE_HEIGHT = fadeHeight || sizeConfig.fadeHeight;
 
   // Calculate padding to center the items
   const paddingVertical = (containerHeight - ITEM_HEIGHT) / 2;
@@ -46,7 +90,7 @@ const InfiniteScroller: React.FC<InfiniteScrollerProps> = ({
         });
       }
     }
-  }, [selectedValue, isScrolling]);
+  }, [selectedValue, isScrolling, ITEM_HEIGHT]);
 
   const handleScroll = (event: any) => {
     const y = event.nativeEvent.contentOffset.y;
@@ -60,11 +104,17 @@ const InfiniteScroller: React.FC<InfiniteScrollerProps> = ({
     setContainerHeight(event.nativeEvent.layout.height);
   };
 
+  const getTextStyle = (isSelected: boolean): TextStyle => ({
+    ...tw.style(isSelected ? `text-black font-bold` : `text-gray-400`),
+    fontSize: FONT_SIZE,
+    ...(textStyle || {}),
+  });
+
   return (
     <View
       style={[
         {
-          width: width * 4,
+          width: SCROLLER_WIDTH * 4,
           height: ITEM_HEIGHT * VISIBLE_ITEMS,
         },
         style,
@@ -74,7 +124,10 @@ const InfiniteScroller: React.FC<InfiniteScrollerProps> = ({
       {/* Top Gradient */}
       <LinearGradient
         colors={["white", "rgba(255,255,255,0)"]}
-        style={tw`absolute top-0 left-0 right-0 h-7 z-10`}
+        style={[
+          tw`absolute top-0 left-0 right-0 z-10`,
+          { height: FADE_HEIGHT },
+        ]}
         pointerEvents='none'
       />
 
@@ -106,13 +159,7 @@ const InfiniteScroller: React.FC<InfiniteScrollerProps> = ({
               alignItems: "center",
             }}
           >
-            <ArabicText
-              style={
-                value === selectedValue
-                  ? tw.style(`text-xl text-black font-bold`)
-                  : tw.style(`text-xl text-gray-400`)
-              }
-            >
+            <ArabicText style={getTextStyle(value === selectedValue)}>
               {value}
             </ArabicText>
           </Pressable>
@@ -122,7 +169,10 @@ const InfiniteScroller: React.FC<InfiniteScrollerProps> = ({
       {/* Bottom Gradient */}
       <LinearGradient
         colors={["rgba(255,255,255,0)", "white"]}
-        style={tw`absolute bottom-0 left-0 right-0 h-7 z-10`}
+        style={[
+          tw`absolute bottom-0 left-0 right-0 z-10`,
+          { height: FADE_HEIGHT },
+        ]}
         pointerEvents='none'
       />
     </View>
