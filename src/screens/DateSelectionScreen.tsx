@@ -10,6 +10,7 @@ import Card from "../components/shared/Card";
 import GradientBackground from "../components/shared/GradientBackground";
 import DateScreenTimePicker from "./date/components/DateScreenTimePicker";
 import Button from "../components/shared/Button";
+import { useDateContext } from "../contexts/DateContext";
 
 type TimeState = {
   hours: number;
@@ -26,15 +27,9 @@ const DateSelectionScreen = () => {
   const navigation = useNavigation();
   const { width: SCREEN_WIDTH } = Dimensions.get("window");
   const SLIDER_LENGTH = (SCREEN_WIDTH - 32 * 2 - 24 * 2) * 0.65;
+  const { selectedDate, setSelectedDate } = useDateContext();
 
-  const [selectedTime, setSelectedTime] = useState<TimeState>({
-    hours: 9,
-    minutes: 0,
-    period: "AM",
-    year: 2024,
-    month: 1,
-    day: 1,
-  });
+  const [selectedTime, setSelectedTime] = useState<TimeState>(selectedDate);
   const [speedRange, setSpeedRange] = useState<SpeedRange>([25, 75]);
 
   const handleTimeSelect = (time: TimeState) => {
@@ -46,7 +41,8 @@ const DateSelectionScreen = () => {
   };
 
   const handleSave = () => {
-    // Implement the save logic here
+    setSelectedDate(selectedTime);
+    navigation.goBack();
   };
 
   return (

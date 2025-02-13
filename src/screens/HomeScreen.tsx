@@ -1,6 +1,5 @@
 import React, { useState } from "react";
-import { View, Pressable, Dimensions, Modal } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { View, Pressable, Dimensions, Modal, SafeAreaView } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { SvgXml } from "react-native-svg";
 import { useNavigation } from "@react-navigation/native";
@@ -14,11 +13,12 @@ import { premiumIcon } from "../constants/icons";
 import HeaderProfile from "./home/components/HeaderProfile";
 import CalendarDay from "./home/components/CalendarDay";
 import QuickAction from "./home/components/QuickAction";
+import { useDateContext } from "../contexts/DateContext";
 import {
   GRADIENT_COLORS,
   GRADIENT_START,
   GRADIENT_END,
-  CALENDAR_DATA,
+  getCalendarWeek,
   QUICK_ACTIONS,
 } from "./home/constants";
 import { planet1, planet2, polygon } from "../constants/icons";
@@ -27,14 +27,41 @@ const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
 const HomeScreen = () => {
   const [showPopup, setShowPopup] = useState(false);
+  const [selectedQuickAction, setSelectedQuickAction] =
+    useState<string>("location");
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const { selectedDate } = useDateContext();
+
+  const handleQuickAction = (actionId: string) => {
+    setSelectedQuickAction(actionId);
+
+    switch (actionId) {
+      case "birth":
+        navigation.navigate("DateSelection");
+        break;
+      case "location":
+        setShowPopup(true);
+        break;
+      case "eclipse":
+        navigation.navigate("DailyHoroscope");
+        break;
+      case "eclipse-location":
+        navigation.navigate("TipsAndTricks");
+        break;
+    }
+  };
+
+  // Generate calendar data based on selected date
+  const calendarData = getCalendarWeek(
+    new Date(selectedDate.year, selectedDate.month - 1, selectedDate.day),
+  );
 
   return (
     <GradientBackground hideTopBlob hideBottomBlob>
       <SafeAreaView style={tw`flex-1`}>
         {/* Header Container */}
-        <View style={tw`bg-white rounded-b-4xl pt-6 pb-3.5 px-8`}>
+        <View style={tw`bg-white rounded-b-4xl pt-12 pb-3.5 px-8`}>
           {/* Top Row */}
           <View style={tw`flex-row items-center justify-between`}>
             {/* Logo with Premium Icon */}
@@ -49,21 +76,23 @@ const HomeScreen = () => {
               </LinearGradient>
             </Pressable>
 
-            <HeaderProfile name='حسين' date='24 يناير 1990' />
+            <HeaderProfile
+              name='حسين'
+              date={`${selectedDate.day} يناير ${selectedDate.year}`}
+            />
           </View>
 
           {/* Calendar Section */}
-          <View style={tw`flex-row justify-between mt-3`}>
-            {CALENDAR_DATA.map((item) => (
-              <Pressable
-                key={item.date}
-                style={tw`items-center`}
-                onPress={() => navigation.navigate("DateSelection")}
-              >
+          <Pressable
+            onPress={() => navigation.navigate("DateSelection")}
+            style={tw`flex-row justify-between mt-3`}
+          >
+            {calendarData.map((item) => (
+              <View key={`${item.day}-${item.date}`} style={tw`items-center`}>
                 <CalendarDay {...item} />
-              </Pressable>
+              </View>
             ))}
-          </View>
+          </Pressable>
         </View>
 
         {/* Main Content Area */}
@@ -94,7 +123,7 @@ const HomeScreen = () => {
         {/* Quick Actions */}
         <View
           style={[
-            tw`flex-row justify-around pb-8 items-center self-center`,
+            tw`flex-row justify-center gap-4 pb-8 items-center self-center`,
             { width: SCREEN_WIDTH * 0.8, maxWidth: 500 },
           ]}
         >
@@ -102,7 +131,8 @@ const HomeScreen = () => {
             <QuickAction
               key={action.id}
               {...action}
-              onPress={() => console.log(`Pressed ${action.id}`)}
+              isSelected={selectedQuickAction === action.id}
+              onPress={() => handleQuickAction(action.id)}
             />
           ))}
         </View>

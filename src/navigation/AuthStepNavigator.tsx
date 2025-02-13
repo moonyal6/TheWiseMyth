@@ -65,6 +65,7 @@ const AuthStepNavigator = () => {
 
         {/* Stack Navigator */}
         <Stack.Navigator
+        
           screenOptions={{
             headerShown: false,
             animation: "slide_from_left",

@@ -1,6 +1,5 @@
 import React from "react";
-import { View, ScrollView, Image } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { View, ScrollView, Image, SafeAreaView } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
@@ -159,7 +158,7 @@ const SettingsScreen = () => {
               <SettingItem
                 icon='sun'
                 label='الابراج اليومية'
-                onPress={() => console.log("Daily Horoscopes")}
+                onPress={() => navigation.navigate("DailyHoroscope")}
                 leftIcon='chevron-left'
               />
             </SettingsSection>

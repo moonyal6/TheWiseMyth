@@ -1,5 +1,11 @@
 import React from "react";
-import { View, Animated, ViewStyle } from "react-native";
+import {
+  View,
+  Animated,
+  ViewStyle,
+  KeyboardAvoidingView,
+  Platform,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import GradientBackground from "../../../../components/shared/GradientBackground";
 import ArabicText from "../../../../components/shared/ArabicText";
@@ -7,6 +13,7 @@ import tw from "../../../../utils/tailwind";
 
 interface AuthStepContentProps {
   children: React.ReactNode;
+  style?: ViewStyle;
   showWarningText?: boolean;
   contentContainerStyle?: ViewStyle;
 }
@@ -15,6 +22,7 @@ const AuthStepContent: React.FC<AuthStepContentProps> = ({
   children,
   showWarningText = true,
   contentContainerStyle,
+  style,
 }) => {
   const fadeAnim = React.useRef(new Animated.Value(0)).current;
   const slideAnim = React.useRef(new Animated.Value(30)).current;
@@ -36,14 +44,20 @@ const AuthStepContent: React.FC<AuthStepContentProps> = ({
   }, []);
 
   return (
-    <Animated.View
-      style={[
-        tw`flex-1`,
+    <KeyboardAvoidingView
+      behavior={Platform.OS === "ios" ? "padding" : undefined}
+      style={tw`flex-1`}
+      keyboardVerticalOffset={Platform.OS === "ios" ? 64 : 0}
+    >
+      <Animated.View
+        style={[
+          tw`flex-1`,
         {
           opacity: fadeAnim,
           transform: [{ translateY: slideAnim }],
         },
         contentContainerStyle,
+        style,
       ]}
     >
       {/* Warning Text */}
@@ -58,7 +72,8 @@ const AuthStepContent: React.FC<AuthStepContentProps> = ({
 
       {/* Main Content */}
       <View style={tw`flex-1 justify-between px-8`}>{children}</View>
-    </Animated.View>
+      </Animated.View>
+    </KeyboardAvoidingView>
   );
 };
 

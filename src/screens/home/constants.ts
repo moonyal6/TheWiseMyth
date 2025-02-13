@@ -2,15 +2,33 @@ export const GRADIENT_COLORS = ["#D9259A", "#412787"] as const;
 export const GRADIENT_START = { x: 0.065, y: 0.085 };
 export const GRADIENT_END = { x: 0.935, y: 0.915 };
 
-export const CALENDAR_DATA = [
-  { day: "S", date: 21, isSelected: false },
-  { day: "M", date: 22, isSelected: false },
-  { day: "T", date: 23, isSelected: false },
-  { day: "W", date: 24, isSelected: true },
-  { day: "T", date: 25, isSelected: false },
-  { day: "F", date: 26, isSelected: false },
-  { day: "S", date: 27, isSelected: false },
-];
+const DAYS = ["S", "M", "T", "W", "T", "F", "S"] as const;
+
+export const getCalendarWeek = (selectedDate: Date) => {
+  // Get the current date
+  const currentDate = new Date(selectedDate);
+  
+  // Get the day of the week (0-6, where 0 is Sunday)
+  const currentDay = currentDate.getDay();
+  
+  // Calculate the start date by going back to Sunday
+  const startDate = new Date(currentDate);
+  startDate.setDate(currentDate.getDate() - currentDay);
+  
+  // Generate 7 days of data starting from Sunday
+  return Array.from({ length: 7 }, (_, index) => {
+    const date = new Date(startDate);
+    date.setDate(startDate.getDate() + index);
+    
+    return {
+      day: DAYS[date.getDay()],
+      date: date.getDate(),
+      isSelected: date.getDate() === currentDate.getDate() &&
+                 date.getMonth() === currentDate.getMonth() &&
+                 date.getFullYear() === currentDate.getFullYear()
+    };
+  });
+};
 
 // SVG Icons - Adjusted viewBox to remove extra whitespace
 export const BIRTH_ICON = `<svg width="30" height="30" viewBox="2.9 1 27.2 27.1" fill="none" xmlns="http://www.w3.org/2000/svg">

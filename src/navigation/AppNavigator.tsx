@@ -7,6 +7,7 @@ import { Feather } from "@expo/vector-icons";
 import tw from "../utils/tailwind";
 import ArabicText from "../components/shared/ArabicText";
 import AuthNavigator from "./AuthNavigator";
+import { DateProvider } from "../contexts/DateContext";
 
 // Screen imports
 import HomeScreen from "../screens/HomeScreen";
@@ -15,6 +16,7 @@ import SettingsScreen from "../screens/SettingsScreen";
 import SubscriptionScreen from "../screens/SubscriptionScreen";
 import DateSelectionScreen from "../screens/DateSelectionScreen";
 import TipsAndTricksScreen from "../screens/TipsAndTricksScreen";
+import DailyHoroscopeScreen from "../screens/DailyHoroscopeScreen";
 
 // Type definitions
 export type RootStackParamList = {
@@ -23,6 +25,7 @@ export type RootStackParamList = {
   Subscription: undefined;
   DateSelection: undefined;
   TipsAndTricks: undefined;
+  DailyHoroscope: undefined;
 };
 
 export type MainTabParamList = {
@@ -55,7 +58,7 @@ const MainTabs = () => {
     <Tab.Navigator
       screenOptions={{
         headerShown: false,
-        tabBarStyle: tw`h-16 bg-white border-t border-gray-100`,
+        tabBarStyle: tw`h-16 bg-white border-t rounded-t-[15px] border-gray-100`,
         tabBarShowLabel: false,
       }}
     >
@@ -92,15 +95,21 @@ const MainTabs = () => {
 
 const AppNavigator = () => {
   return (
-    <NavigationContainer>
-      <Stack.Navigator screenOptions={{ headerShown: false }}>
-        <Stack.Screen name='Auth' component={AuthNavigator} />
-        <Stack.Screen name='MainApp' component={MainTabs} />
-        <Stack.Screen name='Subscription' component={SubscriptionScreen} />
-        <Stack.Screen name='DateSelection' component={DateSelectionScreen} />
-        <Stack.Screen name='TipsAndTricks' component={TipsAndTricksScreen} />
-      </Stack.Navigator>
-    </NavigationContainer>
+    <DateProvider>
+      <NavigationContainer>
+        <Stack.Navigator screenOptions={{ headerShown: false }}>
+          <Stack.Screen name='Auth' component={AuthNavigator} />
+          <Stack.Screen name='MainApp' component={MainTabs} />
+          <Stack.Screen name='Subscription' component={SubscriptionScreen} />
+          <Stack.Screen name='DateSelection' component={DateSelectionScreen} />
+          <Stack.Screen name='TipsAndTricks' component={TipsAndTricksScreen} />
+          <Stack.Screen
+            name='DailyHoroscope'
+            component={DailyHoroscopeScreen}
+          />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </DateProvider>
   );
 };
 

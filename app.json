@@ -13,16 +13,29 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.thewisemyth",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
+      "android": {
+        "softwareKeyboardLayoutMode": "pan"
+      },
       "adaptiveIcon": {
         "foregroundImage": "./assets/default/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.moony_al.x6.TheWiseMyth"
     },
     "web": {
       "favicon": "./assets/default/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "6ecf2dca-02eb-4aa3-a5d0-9312ac028f73"
+      }
     }
   }
 }
