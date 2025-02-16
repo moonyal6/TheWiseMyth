@@ -251,8 +251,9 @@ const HomeScreen = () => {
               position: "absolute",
               bottom: 0,
               right: "50%",
-              marginRight: -20,
-              transform: [{ translateX: -20 }],
+              // marginRight: -40,
+              // center the transform  translateX
+              transform: [{ translateX: 20 }],
             }}
           >
             <Pressable
