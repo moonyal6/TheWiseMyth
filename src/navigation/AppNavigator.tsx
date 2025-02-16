@@ -4,6 +4,7 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Feather } from "@expo/vector-icons";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import tw from "../utils/tailwind";
 import ArabicText from "../components/shared/ArabicText";
 import AuthNavigator from "./AuthNavigator";
@@ -17,6 +18,7 @@ import SubscriptionScreen from "../screens/SubscriptionScreen";
 import DateSelectionScreen from "../screens/DateSelectionScreen";
 import TipsAndTricksScreen from "../screens/TipsAndTricksScreen";
 import DailyHoroscopeScreen from "../screens/DailyHoroscopeScreen";
+import UserSelectionScreen from "../screens/UserSelectionScreen";
 
 // Type definitions
 export type RootStackParamList = {
@@ -26,6 +28,7 @@ export type RootStackParamList = {
   DateSelection: undefined;
   TipsAndTricks: undefined;
   DailyHoroscope: undefined;
+  UserSelection: undefined;
 };
 
 export type MainTabParamList = {
@@ -95,21 +98,41 @@ const MainTabs = () => {
 
 const AppNavigator = () => {
   return (
-    <DateProvider>
-      <NavigationContainer>
-        <Stack.Navigator screenOptions={{ headerShown: false }}>
-          <Stack.Screen name='Auth' component={AuthNavigator} />
-          <Stack.Screen name='MainApp' component={MainTabs} />
-          <Stack.Screen name='Subscription' component={SubscriptionScreen} />
-          <Stack.Screen name='DateSelection' component={DateSelectionScreen} />
-          <Stack.Screen name='TipsAndTricks' component={TipsAndTricksScreen} />
-          <Stack.Screen
-            name='DailyHoroscope'
-            component={DailyHoroscopeScreen}
-          />
-        </Stack.Navigator>
-      </NavigationContainer>
-    </DateProvider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <DateProvider>
+        <NavigationContainer>
+          <Stack.Navigator
+            screenOptions={{
+              headerShown: false,
+            }}
+          >
+            <Stack.Screen name='Auth' component={AuthNavigator} />
+            <Stack.Screen name='MainApp' component={MainTabs} />
+            <Stack.Screen
+              name='UserSelection'
+              component={UserSelectionScreen}
+              options={{
+                presentation: "modal",
+                animation: "slide_from_bottom",
+              }}
+            />
+            <Stack.Screen name='Subscription' component={SubscriptionScreen} />
+            <Stack.Screen
+              name='DateSelection'
+              component={DateSelectionScreen}
+            />
+            <Stack.Screen
+              name='TipsAndTricks'
+              component={TipsAndTricksScreen}
+            />
+            <Stack.Screen
+              name='DailyHoroscope'
+              component={DailyHoroscopeScreen}
+            />
+          </Stack.Navigator>
+        </NavigationContainer>
+      </DateProvider>
+    </GestureHandlerRootView>
   );
 };
 

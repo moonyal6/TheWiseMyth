@@ -134,16 +134,13 @@ const HomeScreen = () => {
 
     switch (actionId) {
       case "birth":
-        // navigation.navigate("DateSelection");
+        navigation.navigate("UserSelection");
         break;
       case "location":
-        // setShowPopup(true);
         break;
       case "eclipse":
-        // navigation.navigate("DailyHoroscope");
         break;
       case "eclipse-location":
-        // navigation.navigate("TipsAndTricks");
         break;
     }
   };
@@ -205,8 +202,20 @@ const HomeScreen = () => {
                 borderWidth: 0,
                 borderHighlightColor: "transparent",
               }}
-              startingDate={moment(new Date(selectedDate.year, selectedDate.month - 1, selectedDate.day)).subtract(3, 'days')}
-              selectedDate={new Date(selectedDate.year, selectedDate.month - 1, selectedDate.day)}
+              startingDate={moment(
+                new Date(
+                  selectedDate.year,
+                  selectedDate.month - 1,
+                  selectedDate.day,
+                ),
+              ).subtract(3, "days")}
+              selectedDate={
+                new Date(
+                  selectedDate.year,
+                  selectedDate.month - 1,
+                  selectedDate.day,
+                )
+              }
               dayComponent={(props) => {
                 const dateStr = props.date.toString();
                 const momentDate = moment(dateStr, "ddd MMM DD YYYY");
