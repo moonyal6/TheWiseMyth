@@ -4,28 +4,30 @@ export const GRADIENT_END = { x: 0.935, y: 0.915 };
 
 const DAYS = ["S", "M", "T", "W", "T", "F", "S"] as const;
 
-export const getCalendarWeek = (selectedDate: Date) => {
-  // Get the current date
-  const currentDate = new Date(selectedDate);
-  
-  // Get the day of the week (0-6, where 0 is Sunday)
-  const currentDay = currentDate.getDay();
-  
-  // Calculate the start date by going back to Sunday
+export const generateDateRange = (centerDate: Date, yearsEachSide: number = 2.5) => {
+  const currentDate = new Date(centerDate);
+  const daysEachSide = Math.floor(yearsEachSide * 365);
+  const totalDays = daysEachSide * 2 + 1;
+
+  // Calculate start date (going back yearsEachSide years)
   const startDate = new Date(currentDate);
-  startDate.setDate(currentDate.getDate() - currentDay);
-  
-  // Generate 7 days of data starting from Sunday
-  return Array.from({ length: 7 }, (_, index) => {
+  startDate.setDate(startDate.getDate() - daysEachSide);
+
+  // Generate the specified number of days
+  return Array.from({ length: totalDays }, (_, index) => {
     const date = new Date(startDate);
     date.setDate(startDate.getDate() + index);
-    
+
+    const isSelected = date.getDate() === currentDate.getDate() &&
+                      date.getMonth() === currentDate.getMonth() &&
+                      date.getFullYear() === currentDate.getFullYear();
+
     return {
       day: DAYS[date.getDay()],
       date: date.getDate(),
-      isSelected: date.getDate() === currentDate.getDate() &&
-                 date.getMonth() === currentDate.getMonth() &&
-                 date.getFullYear() === currentDate.getFullYear()
+      month: date.getMonth() + 1,
+      year: date.getFullYear(),
+      isSelected,
     };
   });
 };

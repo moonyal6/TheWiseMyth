@@ -1,5 +1,12 @@
-import React, { useState } from "react";
-import { View, Pressable, Dimensions, Modal, SafeAreaView } from "react-native";
+import React, { useState, useRef, useMemo } from "react";
+import {
+  View,
+  Pressable,
+  Dimensions,
+  Modal,
+  SafeAreaView,
+  Animated,
+} from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { SvgXml } from "react-native-svg";
 import { useNavigation } from "@react-navigation/native";
@@ -18,20 +25,109 @@ import {
   GRADIENT_COLORS,
   GRADIENT_START,
   GRADIENT_END,
-  getCalendarWeek,
+  generateDateRange,
   QUICK_ACTIONS,
 } from "./home/constants";
 import { planet1, planet2, polygon } from "../constants/icons";
+import { Ionicons } from "@expo/vector-icons";
+import CalendarStrip from "react-native-calendar-strip";
+import type { Moment, Duration } from "moment";
+import moment from "moment";
+import type { IDayComponentProps } from "react-native-calendar-strip";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
+
+const CustomDay = ({
+  date,
+  selected,
+  onPress,
+}: {
+  date: any;
+  selected: boolean;
+  onPress?: () => void;
+}) => {
+  // Convert the date to a string format that moment can parse
+  const dateStr = date.toString();
+  const momentDate = moment(dateStr, "ddd MMM DD YYYY");
+
+  return (
+    <Pressable onPress={onPress}>
+      {selected ? (
+        <LinearGradient
+          colors={GRADIENT_COLORS}
+          start={GRADIENT_START}
+          end={GRADIENT_END}
+          style={{
+            borderRadius: 14,
+            width: 42,
+            height: 80,
+            paddingBottom: 16,
+
+            alignItems: "center",
+            justifyContent: "center",
+            marginHorizontal: 8,
+          }}
+        >
+          <ArabicText style={tw`text-white font-medium text-xs mb-1`}>
+            {momentDate.format("ddd").charAt(0)}
+          </ArabicText>
+          <ArabicText style={tw`text-white font-semibold text-base`}>
+            {momentDate.date()}
+          </ArabicText>
+        </LinearGradient>
+      ) : (
+        <View
+          style={{
+            width: 42,
+            height: 80,
+            paddingBottom: 22,
+            alignItems: "center",
+            justifyContent: "center",
+            marginHorizontal: 8,
+          }}
+        >
+          <ArabicText style={tw`text-[#bcc1cd] font-medium text-xs mb-1`}>
+            {momentDate.format("ddd").charAt(0)}
+          </ArabicText>
+          <ArabicText style={tw`text-[#2c2287] text-base font-semibold`}>
+            {momentDate.date()}
+          </ArabicText>
+        </View>
+      )}
+    </Pressable>
+  );
+};
 
 const HomeScreen = () => {
   const [showPopup, setShowPopup] = useState(false);
   const [selectedQuickAction, setSelectedQuickAction] =
     useState<string>("location");
+  const [isSelectedDateVisible, setIsSelectedDateVisible] = useState(true);
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-  const { selectedDate } = useDateContext();
+  const { selectedDate, setSelectedDate } = useDateContext();
+  const calendarRef = useRef<any>(null);
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+
+  const checkIfDateIsInView = (startDate: Moment) => {
+    // Get the week before
+    const start = startDate.clone().startOf("week").subtract(1, "week");
+    // Get the end of the week after
+    const end = startDate.clone().endOf("week").add(1, "week");
+    const selectedMoment = moment(
+      new Date(selectedDate.year, selectedDate.month - 1, selectedDate.day),
+    );
+
+    const isVisible = selectedMoment.isBetween(start, end, "day", "[]");
+    setIsSelectedDateVisible(isVisible);
+
+    // Animate the button
+    Animated.timing(fadeAnim, {
+      toValue: isVisible ? 0 : 1,
+      duration: 200,
+      useNativeDriver: true,
+    }).start();
+  };
 
   const handleQuickAction = (actionId: string) => {
     setSelectedQuickAction(actionId);
@@ -52,18 +148,31 @@ const HomeScreen = () => {
     }
   };
 
-  // Generate calendar data based on selected date
-  const calendarData = getCalendarWeek(
-    new Date(selectedDate.year, selectedDate.month - 1, selectedDate.day),
-  );
+  const handleDateSelect = (date: Moment) => {
+    setSelectedDate({
+      ...selectedDate,
+      day: date.date(),
+      month: date.month() + 1,
+      year: date.year(),
+    });
+  };
+
+  const scrollToSelectedDate = () => {
+    if (calendarRef.current) {
+      const date = moment(
+        new Date(selectedDate.year, selectedDate.month - 1, selectedDate.day),
+      );
+      calendarRef.current.updateWeekView(date);
+    }
+  };
 
   return (
     <GradientBackground hideTopBlob hideBottomBlob>
       <SafeAreaView style={tw`flex-1`}>
         {/* Header Container */}
-        <View style={tw`bg-white rounded-b-4xl pt-12 pb-3.5 px-8`}>
+        <View style={tw`bg-white rounded-b-4xl pt-12 pb-3.5 `}>
           {/* Top Row */}
-          <View style={tw`flex-row items-center justify-between`}>
+          <View style={tw`flex-row items-center justify-between px-8`}>
             {/* Logo with Premium Icon */}
             <Pressable onPress={() => navigation.navigate("Subscription")}>
               <LinearGradient
@@ -83,20 +192,86 @@ const HomeScreen = () => {
           </View>
 
           {/* Calendar Section */}
-          <Pressable
-            onPress={() => navigation.navigate("DateSelection")}
-            style={tw`flex-row justify-between mt-3`}
+          <View style={tw`mt-4 relative `}>
+            <CalendarStrip
+              ref={calendarRef}
+              dayComponentHeight={80}
+              style={tw`h-20`}
+              calendarAnimation={{ type: "parallel", duration: 200 }}
+              onWeekChanged={checkIfDateIsInView}
+              daySelectionAnimation={{
+                type: "border",
+                duration: 200,
+                borderWidth: 0,
+                borderHighlightColor: "transparent",
+              }}
+              dayComponent={(props) => {
+                const dateStr = props.date.toString();
+                const momentDate = moment(dateStr, "ddd MMM DD YYYY");
+                return (
+                  <CustomDay
+                    date={props.date}
+                    selected={
+                      momentDate.date() === selectedDate.day &&
+                      momentDate.month() + 1 === selectedDate.month &&
+                      momentDate.year() === selectedDate.year
+                    }
+                    onPress={() => {
+                      if (props.onDateSelected) {
+                        handleDateSelect(momentDate);
+                      }
+                    }}
+                  />
+                );
+              }}
+              calendarHeaderStyle={tw`hidden`}
+              styleWeekend={false}
+              useIsoWeekday={false}
+              scrollable
+              selectedDate={
+                new Date(
+                  selectedDate.year,
+                  selectedDate.month - 1,
+                  selectedDate.day,
+                )
+              }
+              onDateSelected={handleDateSelect}
+              minDate={
+                new Date(new Date().setFullYear(new Date().getFullYear() - 2))
+              }
+              maxDate={
+                new Date(new Date().setFullYear(new Date().getFullYear() + 2))
+              }
+              iconContainer={tw`hidden`}
+            />
+          </View>
+          <Animated.View
+            style={{
+              opacity: fadeAnim,
+              position: "absolute",
+              bottom: 0,
+              right: "50%",
+              marginRight: -20,
+              transform: [{ translateX: -20 }],
+            }}
           >
-            {calendarData.map((item) => (
-              <View key={`${item.day}-${item.date}`} style={tw`items-center`}>
-                <CalendarDay {...item} />
-              </View>
-            ))}
-          </Pressable>
+            <Pressable
+              onPress={scrollToSelectedDate}
+              style={tw`rounded-lg py-1 px-3 mb-0.5 bg-gray-100 `}
+            >
+              <Ionicons name='locate' size={12} color='#2C2287' />
+            </Pressable>
+          </Animated.View>
         </View>
 
         {/* Main Content Area */}
         <View style={tw`flex-1 items-center justify-center`}>
+          <Pressable
+            onPress={() => navigation.navigate("DateSelection")}
+            style={tw`absolute top-3.5 right-3.5 p-1.5 rounded-full shadow-md shadow-black/40 bg-[#f7f3f6] border border-[#dadada73]`}
+          >
+            <Ionicons name='time-outline' size={28} color='black' />
+          </Pressable>
           <Pressable onPress={() => setShowPopup(true)}>
             <View
               style={[

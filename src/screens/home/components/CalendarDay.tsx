@@ -18,7 +18,7 @@ const CalendarDay: React.FC<CalendarDayProps> = ({ day, date, isSelected }) => {
         colors={GRADIENT_COLORS}
         start={GRADIENT_START}
         end={GRADIENT_END}
-        style={tw`items-center pt-2.5 pb-6.5 px-3 rounded-[14px]`}
+        style={tw`items-center pt-2.5 pb-6.5 w-10 rounded-[14px]`}
       >
         <ArabicText style={tw`text-xs mb-1 font-medium text-white`}>
           {day}
@@ -31,7 +31,8 @@ const CalendarDay: React.FC<CalendarDayProps> = ({ day, date, isSelected }) => {
   }
 
   return (
-    <View style={tw`items-center pt-2.5 pb-6.5`}>
+    <View style={tw`items-center w-4 pt-2.5 pb-6.5`}>
+      <View style={tw`w-4 absolute top-0 h-2  `} />
       <ArabicText style={tw`text-xs mb-1 font-medium text-[#BCC1CD]`}>
         {day}
       </ArabicText>
